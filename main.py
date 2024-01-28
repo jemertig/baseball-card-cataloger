@@ -1,4 +1,5 @@
 import numpy
+import pytesseract
 import cv2
 import matplotlib.pyplot as plt
 from PIL import Image
@@ -19,8 +20,29 @@ def take_pic():
     plt.imshow(rgb_frame)
     plt.axis('off')
     plt.show()
+
+    # Convert to grayscale
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    plt.imshow(gray_image)
+    plt.axis('off')
+    plt.show()
+
+    # Thresholding
+    _, thresholded_image = cv2.threshold(gray_image, 128, 255, cv2.THRESH_BINARY)
+
+    # Save the preprocessed image
+    cv2.imwrite("preprocessed_card.jpg", thresholded_image)
+
+
+    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+    # Perform OCR on the preprocessed image
+    text = pytesseract.image_to_string(Image.open("preprocessed_card.jpg"))
+
+    print("Extracted Text:")
+    print(text)
     # Release the camera
     camera.release()
 
-    print("Hello World!")
+    #print("Hello World!")
 
+take_pic()
