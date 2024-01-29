@@ -33,16 +33,40 @@ def take_pic():
     # Save the preprocessed image
     cv2.imwrite("preprocessed_card.jpg", thresholded_image)
 
-
-    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-    # Perform OCR on the preprocessed image
-    text = pytesseract.image_to_string(Image.open("preprocessed_card.jpg"))
-
-    print("Extracted Text:")
-    print(text)
     # Release the camera
     camera.release()
 
     #print("Hello World!")
 
-take_pic()
+def extract_data():
+    original_image = cv2.imread("test_back.jpg")
+    
+    #if original_image is None:
+    #    print("Error: Unable to load the original image.")
+    #else:
+        #print("Original image loaded successfully.")
+
+    roi_player_name = (565, 275, 590, 480)
+    print("Original Image Shape:", original_image.shape)
+    print("ROI Coordinates:", roi_player_name)
+
+    # Verify coordinates
+    if (
+        0 <= roi_player_name[0] < roi_player_name[2] <= original_image.shape[1]
+        and 0 <= roi_player_name[1] < roi_player_name[3] <= original_image.shape[0]
+    ):
+
+        print("Coordinates are valid.")
+    else:
+        print("Error: Invalid coordinates for cropping.")
+    cropped_player_name = original_image[roi_player_name[1]:roi_player_name[3], roi_player_name[0]:roi_player_name[2]]
+    cv2.imwrite("cropped_player_name.jpg", cropped_player_name)
+    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+    # Perform OCR on the preprocessed image
+    text = pytesseract.image_to_string(Image.open("cropped_player_name.jpg"))
+
+    print("Extracted Text:")
+    print(text)
+
+
+extract_data()
